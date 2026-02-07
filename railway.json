@@ -5,7 +5,7 @@
     "buildCommand": "cd backend && pip install -r requirements.txt"
   },
   "deploy": {
-    "startCommand": "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn config.wsgi --bind 0.0.0.0:$PORT",
+    "startCommand": "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn config.wsgi --bind 0.0.0.0:$PORT --chdir /app/backend",
     "healthcheckPath": "/api/health/",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
