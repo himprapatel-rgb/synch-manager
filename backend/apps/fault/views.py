@@ -150,3 +150,22 @@ class AlarmPolicyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['is_active', 'action']
+
+    
+class GNSSAlarmSummaryViewSet(viewsets.ViewSet):
+    """GNSS alarm summary: counts by severity for GNSS-related alarms."""
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        qs = Alarm.objects.filter(is_gnss_related=True)
+        active = qs.filter(state='ACTIVE')
+        by_severity = list(
+            active.values('severity').annotate(
+                count=Count('id')
+            ).order_by('severity')
+        )
+        return Response({
+            'total_gnss_alarms': qs.count(),
+            'active_gnss_alarms': active.count(),
+            'by_severity': by_severity,
+        })
