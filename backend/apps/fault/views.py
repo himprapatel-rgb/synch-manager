@@ -8,7 +8,7 @@ Includes inline serializers.
 from rest_framework import viewsets, serializers, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.db.models import Count, Q
@@ -73,7 +73,7 @@ class AlarmViewSet(viewsets.ModelViewSet):
     """Full alarm management: list, filter, acknowledge, clear."""
     queryset = Alarm.objects.select_related('network_element').all()
     serializer_class = AlarmSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
     ]
@@ -134,7 +134,7 @@ class EventViewSet(viewsets.ReadOnlyModelViewSet):
     """Read-only event log."""
     queryset = Event.objects.select_related('network_element').all()
     serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
     ]
@@ -147,14 +147,14 @@ class AlarmPolicyViewSet(viewsets.ModelViewSet):
     """CRUD for alarm policies."""
     queryset = AlarmPolicy.objects.all()
     serializer_class = AlarmPolicySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['is_active', 'action']
 
     
 class GNSSAlarmSummaryViewSet(viewsets.ViewSet):
     """GNSS alarm summary: counts by severity for GNSS-related alarms."""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request):
         qs = Alarm.objects.filter(is_gnss_related=True)
