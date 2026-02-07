@@ -28,7 +28,7 @@ channels-redis>=4.1.0
 
 # GNSS & Timing
 pyserial>=3.5
-nmea-parser>=1.1.0
+nmea-parser>=0.5.0
 
 # Monitoring & Metrics
 prometheus-client>=0.19.0
