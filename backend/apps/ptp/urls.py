@@ -4,16 +4,16 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     PTPDomainViewSet, PTPGrandmasterViewSet, PTPClientViewSet,
-    PTPMetricsViewSet, PTPTopologyViewSet, LinuxPTPConfigViewSet,
+    PTPClientMetricsViewSet, PTPTopologyLinkViewSet, LinuxPTPInstanceViewSet,
 )
 
 router = DefaultRouter()
 router.register(r'domains', PTPDomainViewSet, basename='ptp-domain')
 router.register(r'grandmasters', PTPGrandmasterViewSet, basename='ptp-grandmaster')
 router.register(r'clients', PTPClientViewSet, basename='ptp-client')
-router.register(r'metrics', PTPMetricsViewSet, basename='ptp-metrics')
-router.register(r'topology', PTPTopologyViewSet, basename='ptp-topology')
-router.register(r'linuxptp-config', LinuxPTPConfigViewSet, basename='linuxptp-config')
+router.register(r'metrics', PTPClientMetricsViewSet, basename='ptp-metrics')
+router.register(r'topology', PTPTopologyLinkViewSet, basename='ptp-topology')
+router.register(r'linuxptp-config', LinuxPTPInstanceViewSet, basename='linuxptp-config')
 
 urlpatterns = [
     path('', include(router.urls)),
