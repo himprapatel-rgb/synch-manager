@@ -9,7 +9,6 @@ channels==4.1.0
 channels-redis==4.2.0
 
 # Database
-mysqlclient==2.2.4
 psycopg2-binary==2.9.9
 
 # Task Queue
@@ -20,7 +19,7 @@ redis==5.1.0
 pysnmp==6.2.6
 
 # Kafka
-confluent-kafka==2.5.3
+kafka-python==2.0.2
 
 # Monitoring
 django-prometheus==2.3.1
