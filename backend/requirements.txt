@@ -38,3 +38,10 @@ pyyaml==6.0.2
 # Deployment (Railway + Docker)
 whitenoise==6.7.0
 dj-database-url==2.3.0
+
+# Scientific Computing
+numpy==1.26.4
+
+# Testing
+pytest==8.0.0
+pytest-django==4.8.0
