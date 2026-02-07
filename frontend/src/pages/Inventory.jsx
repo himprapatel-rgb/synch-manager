@@ -11,8 +11,9 @@ export default function Inventory() {
     queryKey: ['network-elements'],
     queryFn: async () => {
       const res = await fetch('https://synch-manager-production.up.railway.app/api/v1/inventory/network-elements/')
-      if (!res.ok) throw new Error('Failed to fetch')
-      return res.json()
+      if (!res.ok) return []
+      const data = await res.json()
+      return data.results || data
     }
   })
 
@@ -25,29 +26,16 @@ export default function Inventory() {
   })
 
   const getStatusInfo = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'managed':
-        return { icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-400/10', label: 'Synced' }
-      case 'unmanaged':
-        return { icon: XCircle, color: 'text-gray-400', bg: 'bg-gray-400/10', label: 'Unmanaged' }
-      case 'unavailable':
-        return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-400/10', label: 'Unavailable' }
-      default:
-        return { icon: Clock, color: 'text-yellow-400', bg: 'bg-yellow-400/10', label: 'Pending' }
+    const statusLower = status?.toLowerCase()
+    if (statusLower === 'managed') {
+      return { Icon: CheckCircle, color: 'text-green-400', label: 'Synced' }
+    } else if (statusLower === 'unavailable') {
+      return { Icon: XCircle, color: 'text-red-400', label: 'Unavailable' }
+    } else if (statusLower === 'unmanaged') {
+      return { Icon: XCircle, color: 'text-gray-400', label: 'Unmanaged' }
+    } else {
+      return { Icon: Clock, color: 'text-yellow-400', label: 'Pending' }
     }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Network Inventory</h1>
-            <p className="text-gray-400">Loading network elements...</p>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -57,39 +45,38 @@ export default function Inventory() {
           <h1 className="text-2xl font-bold text-white">Network Inventory</h1>
           <p className="text-gray-400">Manage PTP/NTP network elements</p>
         </div>
-        <button className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white flex items-center gap-2 transition-colors">
-          <Plus className="w-5 h-5" />
-          Add Device
+        <button className="flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-cyan-600 hover:bg-cyan-700">
+          <Plus className="w-4 h-4" />Add Device
         </button>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
           <input
             type="text"
             placeholder="Search devices..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+            className="w-full py-2 pl-10 pr-4 text-white bg-gray-800 border border-gray-700 rounded-lg"
           />
         </div>
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+          className="px-3 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg"
         >
           <option value="all">All Types</option>
           <option value="TimeProvider 4100">TimeProvider 4100</option>
           <option value="TimeProvider 5000">TimeProvider 5000</option>
-          <option value="Generic PTP Grandmaster">Grandmaster</option>
-          <option value="Generic PTP Boundary Clock">Boundary Clock</option>
+          <option value="Grandmaster">Grandmaster</option>
+          <option value="Boundary Clock">Boundary Clock</option>
           <option value="NTP Server">NTP Server</option>
         </select>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+          className="px-3 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg"
         >
           <option value="all">All Status</option>
           <option value="Managed">Managed</option>
@@ -98,38 +85,47 @@ export default function Inventory() {
         </select>
       </div>
 
-      <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
+      <div className="overflow-hidden border border-gray-700 rounded-lg">
         <table className="w-full">
-          <thead className="bg-gray-800/50">
-            <tr className="border-b border-gray-700">
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Name</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">IP Address</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Type</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
+          <thead className="bg-gray-800">
+            <tr>
+              <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Name</th>
+              <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">IP Address</th>
+              <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Type</th>
+              <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Status</th>
             </tr>
           </thead>
-          <tbody>
-            {filteredDevices.length === 0 ? (
+          <tbody className="divide-y divide-gray-700">
+            {isLoading ? (
               <tr>
                 <td colSpan="4" className="px-6 py-8 text-center text-gray-400">
-                  <Server className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <div className="flex items-center justify-center">
+                    <Clock className="w-5 h-5 mr-2 animate-spin" />
+                    Loading...
+                  </div>
+                </td>
+              </tr>
+            ) : filteredDevices.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="px-6 py-8 text-center text-gray-400">
+                  <Server className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>No devices found</p>
                 </td>
               </tr>
             ) : (
               filteredDevices.map((device) => {
                 const statusInfo = getStatusInfo(device.management_state)
-                const StatusIcon = statusInfo.icon
+                const StatusIcon = statusInfo.Icon
                 return (
-                  <tr key={device.id} className="border-b border-gray-700/50 hover:bg-gray-800/30 transition-colors">
-                    <td className="px-6 py-4 text-white font-medium">{device.name}</td>
-                    <td className="px-6 py-4 text-gray-300">{device.ip_address}</td>
-                    <td className="px-6 py-4 text-gray-300">{device.ne_type}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm ${statusInfo.bg} ${statusInfo.color}`}>
-                        <StatusIcon className="w-4 h-4" />
-                        {statusInfo.label}
-                      </span>
+                  <tr key={device.id} className="transition-colors hover:bg-gray-800">
+                    <td className="px-6 py-4 text-sm font-medium text-white">{device.name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-300">{device.ip_address}</td>
+                    <td className="px-6 py-4 text-sm text-gray-300">{device.ne_type}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <StatusIcon className={`w-4 h-4 ${statusInfo.color}`} />
+                        <span className={statusInfo.color}>{statusInfo.label}</span>
+                      </div>
                     </td>
                   </tr>
                 )
