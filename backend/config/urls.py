@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+import config.admin  # noqa: F401 - registers all models in admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
