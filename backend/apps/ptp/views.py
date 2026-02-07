@@ -89,7 +89,7 @@ class PTPDomainViewSet(viewsets.ModelViewSet):
         gm_count=Count('grandmasters'),
     )
     serializer_class = PTPDomainSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class PTPGrandmasterViewSet(viewsets.ModelViewSet):
@@ -99,7 +99,7 @@ class PTPGrandmasterViewSet(viewsets.ModelViewSet):
         'network_element', 'domain'
     ).all()
     serializer_class = PTPGrandmasterSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['domain', 'clock_class', 'is_active', 'time_source']
 
@@ -111,7 +111,7 @@ class PTPClientViewSet(viewsets.ModelViewSet):
         'grandmaster', 'domain'
     ).all()
     serializer_class = PTPClientSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
         'port_state', 'grandmaster', 'domain',
@@ -168,7 +168,7 @@ class PTPClientMetricsViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = PTPClientMetrics.objects.select_related('client').all()
     serializer_class = PTPClientMetricsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['client', 'port_state']
 
@@ -180,7 +180,7 @@ class PTPTopologyLinkViewSet(viewsets.ModelViewSet):
         'source_ne', 'target_ne'
     ).all()
     serializer_class = PTPTopologyLinkSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['link_type', 'is_active', 'source_ne', 'target_ne']
 
@@ -210,7 +210,7 @@ class LinuxPTPInstanceViewSet(viewsets.ModelViewSet):
 
     queryset = LinuxPTPInstance.objects.select_related('client').all()
     serializer_class = LinuxPTPInstanceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['service_state', 'hardware_timestamping']
 
