@@ -5,7 +5,7 @@
     "buildCommand": "cd backend && pip install -r requirements.txt"
   },
   "deploy": {
-    "startCommand": "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && (python manage.py createsuperuser --noinput || true) && gunicorn config.wsgi --bind 0.0.0.0:$PORT --chdir /app/backend",
+    "startCommand": "cd backend && python manage.py makemigrations configuration fault inventory ntg performance ptp security war_mode && python manage.py migrate && python manage.py collectstatic --noinput && (python manage.py createsuperuser --noinput || true) && gunicorn config.wsgi --bind 0.0.0.0:$PORT",
     "healthcheckPath": "/api/health/",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
