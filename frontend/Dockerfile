@@ -26,9 +26,10 @@ COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 # Railway sets PORT env var - default to 80
 ENV PORT=80
+ENV BACKEND_URL=http://synch-manager.railway.internal:8000
 
 # Expose port
 EXPOSE ${PORT}
 
-# Start nginx with envsubst support
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Start nginx with envsubst support for PORT and BACKEND_URL
+CMD sh -c "envsubst '\$PORT \$BACKEND_URL' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
