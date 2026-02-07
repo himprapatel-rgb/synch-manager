@@ -94,7 +94,7 @@ class ConfigurationPolicyViewSet(viewsets.ModelViewSet):
 
     queryset = ConfigurationPolicy.objects.all()
     serializer_class = ConfigurationPolicySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['policy_type', 'is_active']
 
@@ -112,7 +112,7 @@ class PolicyGroupViewSet(viewsets.ModelViewSet):
 
     queryset = PolicyGroup.objects.prefetch_related('policies').all()
     serializer_class = PolicyGroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=True, methods=['post'], url_path='apply')
     def apply_to_ne(self, request, pk=None):
@@ -150,7 +150,7 @@ class PolicyAssignmentViewSet(viewsets.ModelViewSet):
         'policy_group', 'network_element'
     ).all()
     serializer_class = PolicyAssignmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status', 'network_element']
 
@@ -175,7 +175,7 @@ class ComplianceAuditViewSet(viewsets.ReadOnlyModelViewSet):
         'network_element', 'policy'
     ).all()
     serializer_class = ComplianceAuditSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['result', 'network_element', 'policy']
 
@@ -212,7 +212,7 @@ class ConfigurationSnapshotViewSet(viewsets.ModelViewSet):
         'network_element'
     ).all()
     serializer_class = ConfigurationSnapshotSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['network_element', 'snapshot_type']
 
@@ -266,7 +266,7 @@ class FirmwarePolicyViewSet(viewsets.ModelViewSet):
 
     queryset = FirmwarePolicy.objects.all()
     serializer_class = FirmwarePolicySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['ne_type', 'is_mandatory']
 
@@ -278,7 +278,7 @@ class TimingSourcePriorityViewSet(viewsets.ModelViewSet):
         'network_element'
     ).all()
     serializer_class = TimingSourcePrioritySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['network_element', 'source_type', 'enabled']
 
