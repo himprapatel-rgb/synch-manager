@@ -4,17 +4,29 @@ services:
   # ---- Django Backend ----
   web:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >-
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi --bind 0.0.0.0:8000 --workers 3"
     volumes:
       - ./backend:/app
+      - static_files:/app/staticfiles
     ports:
       - "8000:8000"
     env_file: .env
     depends_on:
-      - mariadb
-      - timescaledb
-      - redis
+      mariadb:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_started
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ---- Celery Worker ----
   celery:
@@ -65,6 +77,11 @@ services:
     ports:
       - "3306:3306"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ---- TimescaleDB ----
   timescaledb:
@@ -78,6 +95,11 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ---- Redis ----
   redis:
@@ -88,7 +110,7 @@ services:
       - "6379:6379"
     restart: unless-stopped
 
-  # ---- Kafka + Zookeeper ----
+  # ---- Zookeeper (for Kafka) ----
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
@@ -98,6 +120,7 @@ services:
       - zookeeper_data:/var/lib/zookeeper
     restart: unless-stopped
 
+  # ---- Kafka ----
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     environment:
@@ -121,7 +144,7 @@ services:
       - "3000:3000"
     restart: unless-stopped
 
-  # ---- React Frontend (dev) ----
+  # ---- React Frontend ----
   frontend:
     build: ./frontend
     ports:
@@ -129,6 +152,8 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
     restart: unless-stopped
 
 volumes:
@@ -137,3 +162,4 @@ volumes:
   redis_data:
   zookeeper_data:
   grafana_data:
+  static_files:
