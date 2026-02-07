@@ -34,3 +34,7 @@ django-axes==7.0.0
 python-dotenv==1.0.1
 gunicorn==22.0.0
 pyyaml==6.0.2
+
+# Deployment (Railway + Docker)
+whitenoise==6.7.0
+dj-database-url==2.3.0
