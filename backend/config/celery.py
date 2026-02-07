@@ -12,10 +12,8 @@ app.autodiscover_tasks()
 # Periodic task schedule for polling and resilience checks
 app.conf.beat_schedule = {
     'poll-all-network-elements': {
-        'task': 'apps.inventory.tasks.poll_all_nes',
-        'schedule': 60.0,  # every 60 seconds
-    },
-    'collect-performance-metrics': {
+        'task': 'apps.inventory.tasks.poll_network_elements',
+        'schedule': 60.0,  # every 60 seconds (1 minute)    'collect-performance-metrics': {
         'task': 'apps.performance.tasks.collect_metrics',
         'schedule': 30.0,  # every 30 seconds
     },
