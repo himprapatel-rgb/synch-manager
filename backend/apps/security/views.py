@@ -53,7 +53,7 @@ class GNSSStatusViewSet(viewsets.ReadOnlyModelViewSet):
     """GNSS receiver status per network element."""
     queryset = GNSSStatus.objects.select_related('network_element')
     serializer_class = GNSSStatusSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=False, methods=['get'], url_path='summary')
     def summary(self, request):
@@ -75,7 +75,7 @@ class ThreatEventViewSet(viewsets.ModelViewSet):
     """GNSS threat events (spoofing, jamming, anomalies)."""
     queryset = ThreatEvent.objects.select_related('network_element')
     serializer_class = ThreatEventSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['threat_type', 'severity', 'resolved']
 
@@ -91,7 +91,7 @@ class ThreatEventViewSet(viewsets.ModelViewSet):
 
 class WarModeViewSet(viewsets.ViewSet):
     """War Mode state management."""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request):
         """Get current War Mode state."""
@@ -126,6 +126,6 @@ class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     """Tamper-evident audit log."""
     queryset = AuditLogEntry.objects.select_related('network_element')
     serializer_class = AuditLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['event_type']
