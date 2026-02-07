@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('django_prometheus.urls')),
     # Health check
     path('api/v1/health/', lambda r: __import__('django.http', fromlist=['JsonResponse']).JsonResponse({'status': 'ok'})),
+        path('api/health/', lambda r: __import__('django.http', fromlist=['JsonResponse']).JsonResponse({'status': 'ok'})),
 ]
