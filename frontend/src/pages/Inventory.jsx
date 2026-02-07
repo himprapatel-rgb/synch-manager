@@ -6,6 +6,7 @@ export default function Inventory() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
+    const [showAddModal, setShowAddModal] = useState(false)
 
   const { data: devices = [], isLoading } = useQuery({
     queryKey: ['network-elements'],
@@ -45,7 +46,7 @@ export default function Inventory() {
           <h1 className="text-2xl font-bold text-white">Network Inventory</h1>
           <p className="text-gray-400">Manage PTP/NTP network elements</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-cyan-600 hover:bg-cyan-700">
+        <button className="flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-cyan-600 hover:bg-cyan-700" onClick={() => setShowAddModal(true)}>
           <Plus className="w-4 h-4" />Add Device
         </button>
       </div>
@@ -134,6 +135,45 @@ export default function Inventory() {
           </tbody>
         </table>
       </div>
+
+            {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-white mb-4">Add New Device</h2>
+            <form onSubmit={(e) => { e.preventDefault(); alert('Add device functionality coming soon!'); setShowAddModal(false); }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Device Name</label>
+                  <input type="text" required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white" placeholder="TP4100-01" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">IP Address</label>
+                  <input type="text" required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white" placeholder="192.168.1.100" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Device Type</label>
+                  <select required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                    <option value="">Select Type</option>
+                    <option value="TimeProvider 4100">TimeProvider 4100</option>
+                    <option value="TimeProvider 5000">TimeProvider 5000</option>
+                    <option value="Grandmaster">Grandmaster</option>
+                    <option value="Boundary Clock">Boundary Clock</option>
+                    <option value="NTP Server">NTP Server</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
+                  Add Device
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
