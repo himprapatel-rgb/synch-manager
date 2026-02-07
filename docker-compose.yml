@@ -148,12 +148,9 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:8000
+      - "80:80"
+    depends_on:
+      - web
     restart: unless-stopped
 
 volumes:
