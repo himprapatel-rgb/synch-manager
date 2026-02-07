@@ -7,7 +7,7 @@ DRF ViewSets for Network Element CRUD, discovery, and topology.
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 
@@ -25,7 +25,7 @@ class NetworkElementGroupViewSet(viewsets.ModelViewSet):
     """CRUD for NE groups (logical containers for policy mgmt)."""
     queryset = NetworkElementGroup.objects.all()
     serializer_class = NetworkElementGroupSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description']
     ordering_fields = ['name', 'created_at']
@@ -34,7 +34,7 @@ class NetworkElementGroupViewSet(viewsets.ModelViewSet):
 class NetworkElementViewSet(viewsets.ModelViewSet):
     """Full CRUD + discovery + status actions for Network Elements."""
     queryset = NetworkElement.objects.select_related('group').all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
     ]
@@ -129,7 +129,7 @@ class CardViewSet(viewsets.ModelViewSet):
     """CRUD for cards/modules within NEs."""
     queryset = Card.objects.select_related('network_element').all()
     serializer_class = CardSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['network_element', 'operational_state']
 
@@ -140,7 +140,7 @@ class PortViewSet(viewsets.ModelViewSet):
         'card', 'card__network_element'
     ).all()
     serializer_class = PortSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
         'card', 'port_type', 'direction',
@@ -155,6 +155,6 @@ class TimingLinkViewSet(viewsets.ModelViewSet):
         'destination_port__card__network_element'
     ).all()
     serializer_class = TimingLinkSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['link_type', 'is_active']
