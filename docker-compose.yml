@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # ---- Django Backend ----
+  web:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - mariadb
+      - timescaledb
+      - redis
+    restart: unless-stopped
+
+  # ---- Celery Worker ----
+  celery:
+    build: ./backend
+    command: celery -A config worker -l info -c 4
+    volumes:
+      - ./backend:/app
+    env_file: .env
+    depends_on:
+      - mariadb
+      - redis
+    restart: unless-stopped
+
+  # ---- Celery Beat Scheduler ----
+  celery-beat:
+    build: ./backend
+    command: celery -A config beat -l info
+    volumes:
+      - ./backend:/app
+    env_file: .env
+    depends_on:
+      - mariadb
+      - redis
+    restart: unless-stopped
+
+  # ---- SNMP Trap Receiver ----
+  snmp-trap-receiver:
+    build: ./backend
+    command: python manage.py run_trap_receiver
+    ports:
+      - "162:162/udp"
+    env_file: .env
+    depends_on:
+      - mariadb
+      - kafka
+    restart: unless-stopped
+
+  # ---- MariaDB ----
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+
+  # ---- TimescaleDB ----
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # ---- Redis ----
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # ---- Kafka + Zookeeper ----
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper
+    restart: unless-stopped
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    restart: unless-stopped
+
+  # ---- Grafana ----
+  grafana:
+    image: grafana/grafana:10.2.0
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  # ---- React Frontend (dev) ----
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  mariadb_data:
+  timescale_data:
+  redis_data:
+  zookeeper_data:
+  grafana_data:
