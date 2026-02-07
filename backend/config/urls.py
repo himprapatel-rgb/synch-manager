@@ -12,6 +12,11 @@ urlpatterns = [
     path('api/v1/inventory/', include('apps.inventory.urls')),
     path('api/v1/fault/', include('apps.fault.urls')),
     path('api/v1/performance/', include('apps.performance.urls')),
+    path('api/v1/security/', include('apps.security.urls')),
+    path('api/v1/ptp/', include('apps.ptp.urls')),
+    path('api/v1/configuration/', include('apps.configuration.urls')),
+    path('api/v1/war-mode/', include('apps.war_mode.urls')),
+    path('api/v1/ntg/', include('apps.ntg.urls')),
     # Prometheus metrics
     path('', include('django_prometheus.urls')),
     # Health check
