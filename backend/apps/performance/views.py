@@ -29,7 +29,7 @@ class PerformanceMetricViewSet(viewsets.ModelViewSet):
     """CRUD + time-range queries for performance metrics."""
     queryset = PerformanceMetric.objects.select_related('network_element')
     serializer_class = PerformanceMetricSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['network_element', 'metric_type']
 
@@ -102,7 +102,7 @@ class SyncMeshScoreViewSet(viewsets.ReadOnlyModelViewSet):
     """Network-wide synchronization health scores."""
     queryset = SyncMeshScore.objects.all()
     serializer_class = SyncMeshScoreSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=False, methods=['get'], url_path='current')
     def current(self, request):
@@ -130,7 +130,7 @@ class MTIEMaskViewSet(viewsets.ReadOnlyModelViewSet):
     """ITU-T MTIE compliance mask definitions."""
     queryset = MTIEMask.objects.all()
     serializer_class = MTIEMaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['standard']
 
@@ -139,6 +139,6 @@ class PerformanceThresholdViewSet(viewsets.ModelViewSet):
     """CRUD for performance alarm thresholds."""
     queryset = PerformanceThreshold.objects.all()
     serializer_class = PerformanceThresholdSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['metric_type', 'severity', 'enabled']
