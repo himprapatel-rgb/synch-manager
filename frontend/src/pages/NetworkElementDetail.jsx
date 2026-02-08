@@ -20,6 +20,11 @@ export default function NetworkElementDetail() {
   // Mock detailed data - in production from API
   const mockDetails = {
     ptp: { clockClass: 6, clockAccuracy: '0x21', priority1: 128, priority2: 128, domain: 0, offsetFromMaster: '+12ns', meanPathDelay: '245ns' },
+        hardware: [
+      { aid: 'TP4100', source: 'TP4100_10.0.0.72', serialNo: 'PLX23060005B', modelNo: '090-14002-003', clei: 'PSMAB00ARA', firmwareRev: '2.3.12', hwRev: 'J', equipmentType: 'EXT CORE 1.00' },
+      { aid: 'EXP', source: 'TP4100_10.0.0.72', serialNo: 'PLX2251003EB', modelNo: 'ETH_10G', clei: 'NA', firmwareRev: '4.8.0_1.2.3', hwRev: 'C', equipmentType: 'Expansion Shelf 10G' },
+      { aid: 'SFP-ETH7', source: 'TP4100_10.0.0.72', serialNo: 'N8EDZS2', modelNo: 'FTLX1370W4BTL', clei: 'NA', firmwareRev: 'NA', hwRev: 'A', equipmentType: '10GDAC(20) FINIS' }
+    ],
     gnss: { status: 'Tracking', satellites: 12, hdop: 0.8, position: '53.2167° N, 6.1000° W', antenna: 'OK' },
     interfaces: [
       { name: 'eth0', status: 'up', speed: '1Gbps', mac: '00:1A:2B:3C:4D:5E', ip: device?.ip_address || '192.168.1.100' },
