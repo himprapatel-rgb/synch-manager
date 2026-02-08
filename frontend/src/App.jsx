@@ -11,6 +11,7 @@ import Configuration from './pages/Configuration'
 import Security from './pages/Security'
 import WarMode from './pages/WarMode'
 import GNSSResilience from './pages/GNSSResilience'
+import NetworkElementDetail from './pages/NetworkElementDetail'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -91,6 +92,7 @@ export default function App() {
             <Route path="/performance" element={<Performance />} />
             <Route path="/configuration" element={<Configuration />} />
             <Route path="/security" element={<Security />} />
+              <Route path="/inventory/:id" element={<NetworkElementDetail />} />
             <Route path="/war-mode" element={<WarMode />} />
             <Route path="/gnss" element={<GNSSResilience />} />
           </Routes>
