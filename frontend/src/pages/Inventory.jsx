@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Server, Plus, Search, Filter, CheckCircle, XCircle, Clock, ChevronRight } from 'lucide-react'
+import Breadcrumb from '../components/Breadcrumb'
 
 export default function Inventory() {
   const navigate = useNavigate()
@@ -40,6 +41,7 @@ export default function Inventory() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
+        <Breadcrumb items={[{ label: 'Inventory' }]} />
           <h1 className="text-2xl font-bold text-white">Network Inventory</h1>
           <p className="text-gray-400">Manage PTP/NTP network elements - Click any device for details</p>
         </div>
