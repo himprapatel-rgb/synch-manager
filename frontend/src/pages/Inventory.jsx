@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Server, Plus, Search, Filter, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Server, Plus, Search, Filter, CheckCircle, XCircle, Clock, ChevronRight } from 'lucide-react'
 
 export default function Inventory() {
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
-    const [showAddModal, setShowAddModal] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
 
   const { data: devices = [], isLoading } = useQuery({
     queryKey: ['network-elements'],
@@ -28,15 +30,10 @@ export default function Inventory() {
 
   const getStatusInfo = (status) => {
     const statusLower = status?.toLowerCase()
-    if (statusLower === 'managed') {
-      return { Icon: CheckCircle, color: 'text-green-400', label: 'Synced' }
-    } else if (statusLower === 'unavailable') {
-      return { Icon: XCircle, color: 'text-red-400', label: 'Unavailable' }
-    } else if (statusLower === 'unmanaged') {
-      return { Icon: XCircle, color: 'text-gray-400', label: 'Unmanaged' }
-    } else {
-      return { Icon: Clock, color: 'text-yellow-400', label: 'Pending' }
-    }
+    if (statusLower === 'managed') return { Icon: CheckCircle, color: 'text-green-400', label: 'Synced' }
+    if (statusLower === 'unavailable') return { Icon: XCircle, color: 'text-red-400', label: 'Unavailable' }
+    if (statusLower === 'unmanaged') return { Icon: XCircle, color: 'text-gray-400', label: 'Unmanaged' }
+    return { Icon: Clock, color: 'text-yellow-400', label: 'Pending' }
   }
 
   return (
@@ -44,7 +41,7 @@ export default function Inventory() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Network Inventory</h1>
-          <p className="text-gray-400">Manage PTP/NTP network elements</p>
+          <p className="text-gray-400">Manage PTP/NTP network elements - Click any device for details</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-cyan-600 hover:bg-cyan-700" onClick={() => setShowAddModal(true)}>
           <Plus className="w-4 h-4" />Add Device
@@ -54,35 +51,19 @@ export default function Inventory() {
       <div className="flex gap-4">
         <div className="relative flex-1">
           <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-          <input
-            type="text"
-            placeholder="Search devices..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full py-2 pl-10 pr-4 text-white bg-gray-800 border border-gray-700 rounded-lg"
-          />
+          <input type="text" placeholder="Search devices..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full py-2 pl-10 pr-4 text-white bg-gray-800 border border-gray-700 rounded-lg" />
         </div>
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg"
-        >
+        <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="px-3 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg">
           <option value="all">All Types</option>
           <option value="TimeProvider 4100">TimeProvider 4100</option>
           <option value="TimeProvider 5000">TimeProvider 5000</option>
           <option value="Grandmaster">Grandmaster</option>
-          <option value="Boundary Clock">Boundary Clock</option>
-          <option value="NTP Server">NTP Server</option>
         </select>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-3 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg"
-        >
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-3 py-2 text-white bg-gray-800 border border-gray-700 rounded-lg">
           <option value="all">All Status</option>
           <option value="Managed">Managed</option>
           <option value="Unmanaged">Unmanaged</option>
-          <option value="Unavailable">Unavailable</option>
         </select>
       </div>
 
@@ -94,40 +75,25 @@ export default function Inventory() {
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">IP Address</th>
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Type</th>
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-300 uppercase">Status</th>
+              <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-300 uppercase"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
             {isLoading ? (
-              <tr>
-                <td colSpan="4" className="px-6 py-8 text-center text-gray-400">
-                  <div className="flex items-center justify-center">
-                    <Clock className="w-5 h-5 mr-2 animate-spin" />
-                    Loading...
-                  </div>
-                </td>
-              </tr>
+              <tr><td colSpan="5" className="px-6 py-8 text-center text-gray-400"><Clock className="w-5 h-5 mr-2 animate-spin inline" />Loading...</td></tr>
             ) : filteredDevices.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="px-6 py-8 text-center text-gray-400">
-                  <Server className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p>No devices found</p>
-                </td>
-              </tr>
+              <tr><td colSpan="5" className="px-6 py-8 text-center text-gray-400"><Server className="w-8 h-8 mx-auto mb-2 opacity-50" /><p>No devices found</p></td></tr>
             ) : (
               filteredDevices.map((device) => {
                 const statusInfo = getStatusInfo(device.management_state)
                 const StatusIcon = statusInfo.Icon
                 return (
-                  <tr key={device.id} className="transition-colors hover:bg-gray-800">
+                  <tr key={device.id} onClick={() => navigate(`/inventory/${device.id}`)} className="transition-colors cursor-pointer hover:bg-gray-800">
                     <td className="px-6 py-4 text-sm font-medium text-white">{device.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-300">{device.ip_address}</td>
+                    <td className="px-6 py-4 text-sm text-gray-300 font-mono">{device.ip_address}</td>
                     <td className="px-6 py-4 text-sm text-gray-300">{device.ne_type}</td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <StatusIcon className={`w-4 h-4 ${statusInfo.color}`} />
-                        <span className={statusInfo.color}>{statusInfo.label}</span>
-                      </div>
-                    </td>
+                    <td className="px-6 py-4 text-sm"><div className="flex items-center gap-2"><StatusIcon className={`w-4 h-4 ${statusInfo.color}`} /><span className={statusInfo.color}>{statusInfo.label}</span></div></td>
+                    <td className="px-6 py-4 text-right"><ChevronRight className="w-5 h-5 text-gray-500" /></td>
                   </tr>
                 )
               })
@@ -136,39 +102,26 @@ export default function Inventory() {
         </table>
       </div>
 
-            {showAddModal && (
+      {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-white mb-4">Add New Device</h2>
-            <form onSubmit={(e) => { e.preventDefault(); alert('Add device functionality coming soon!'); setShowAddModal(false); }}>
+            <form onSubmit={(e) => { e.preventDefault(); setShowAddModal(false); }}>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Device Name</label>
-                  <input type="text" required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white" placeholder="TP4100-01" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">IP Address</label>
-                  <input type="text" required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white" placeholder="192.168.1.100" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Device Type</label>
+                <div><label className="block text-sm font-medium text-gray-300 mb-1">Device Name</label><input type="text" required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white" placeholder="TP4100-01" /></div>
+                <div><label className="block text-sm font-medium text-gray-300 mb-1">IP Address</label><input type="text" required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white" placeholder="192.168.1.100" /></div>
+                <div><label className="block text-sm font-medium text-gray-300 mb-1">Device Type</label>
                   <select required className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
                     <option value="">Select Type</option>
                     <option value="TimeProvider 4100">TimeProvider 4100</option>
                     <option value="TimeProvider 5000">TimeProvider 5000</option>
                     <option value="Grandmaster">Grandmaster</option>
-                    <option value="Boundary Clock">Boundary Clock</option>
-                    <option value="NTP Server">NTP Server</option>
                   </select>
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
-                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
-                  Cancel
-                </button>
-                <button type="submit" className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">
-                  Add Device
-                </button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Cancel</button>
+                <button type="submit" className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">Add Device</button>
               </div>
             </form>
           </div>
