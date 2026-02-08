@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Server, AlertTriangle, Clock, Activity, Calendar, Download, Bell, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
@@ -43,6 +44,7 @@ const recentEvents = [
 
 export default function Dashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState('6h')
+  const navigate = useNavigate()
   const selectedRange = timeRanges.find(r => r.value === selectedTimeRange)
   const chartData = generateChartData(selectedRange?.hours || 6)
 
@@ -58,10 +60,10 @@ export default function Dashboard() {
   })
 
   const statCards = [
-    { name: 'Network Elements', value: stats?.devices || 0, icon: Server, color: 'cyan', trend: '+2 this week' },
-    { name: 'Active Alarms', value: stats?.alarms || 0, icon: AlertTriangle, color: 'red', trend: 'All clear' },
-    { name: 'PTP Synced', value: stats?.synced || 0, icon: Clock, color: 'green', trend: '100% sync rate' },
-    { name: 'System Health', value: '99.9%', icon: Activity, color: 'purple', trend: 'Uptime: 45d 12h' },
+    { name: 'Network Elements', value: stats?.devices || 0, icon: Server, color: 'cyan', trend: '+2 this week' },, link: '/inventory'
+    { name: 'Active Alarms', value: stats?.alarms || 0, icon: AlertTriangle, color: 'red', trend: 'All clear' },, link: '/alarms'
+    { name: 'PTP Synced', value: stats?.synced || 0, icon: Clock, color: 'green', trend: '100% sync rate' },, link: '/performance'
+    { name: 'System Health', value: '99.9%', icon: Activity, color: 'purple', trend: 'Uptime: 45d 12h' }, link: '/configuration',
   ]
 
   return (
@@ -97,7 +99,8 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
-          <div key={stat.name} className="p-4 transition-all bg-gray-800 border border-gray-700 rounded-xl hover:border-gray-600">
+          <div key={stat.name} className="p-4 transition-all bg-gray-800 border border-gray-700 rounded-xl hover:border-gray-600"
+            onClick={() => navigate(stat.link)}
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">{stat.name}</p>
