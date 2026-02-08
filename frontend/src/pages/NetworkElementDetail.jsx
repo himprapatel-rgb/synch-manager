@@ -35,11 +35,10 @@ export default function NetworkElementDetail() {
 
   if (isLoading) return <div className="flex items-center justify-center h-64 text-gray-400"><RefreshCw className="w-6 h-6 animate-spin mr-2" />Loading...</div>
 
-  const tabs = ['overview', 'ptp', 'gnss', 'interfaces', 'alarms', 'performance']
-
+  const tabs = ['overview', 'hardware', 'ptp', 'gnss', 'interfaces', 'alarms', 'performance']
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header *, 'hardware'/}
       <div className="flex items-center gap-4">
         <button onClick={() => navigate('/inventory')} className="p-2 hover:bg-gray-800 rounded-lg"><ArrowLeft className="w-5 h-5 text-gray-400" /></button>
         <div className="flex-1">
